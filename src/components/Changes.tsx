@@ -25,6 +25,10 @@ import { useNavigate } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings'; 
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const drawerWidth = 240;
@@ -107,6 +111,13 @@ export default function Changes() {
   const [group, setGroup] = useState('');
   const [text, setText] = useState('');
 
+  const icons = [
+    <HomeIcon />,
+    <SendIcon />,
+    <PersonAddAltIcon />,
+    <ApartmentIcon />,
+    <SettingsIcon />,
+  ];
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -135,26 +146,15 @@ const handleSettings = () => {
     navigate('/settings');
   };
   
+  const handleHome = () => {
+    navigate('/admin');
+  };
 
 
   useEffect(() => {
     if (!token) {
       window.location.href = '/';
-    } else {
-      axios
-        .get('http://192.168.1.92:12222/api/user/get', {
-          params: {
-            token: token,
-          },
-        })
-        .then((response) => {
-          setResponseData(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [token]);
+    } }, [token]);
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -173,6 +173,12 @@ const handleSettings = () => {
     // Перенаправить пользователя на страницу авторизации
     window.location.href = '/'; // Меняем URL для перенаправления
   };
+  const handleChanges = () => {
+    navigate('/changes');
+  };
+  const handleDivision = () => {
+      navigate('/division');
+    };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -204,37 +210,35 @@ const handleSettings = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {[responseData?.login, 'Рассылка', 'Создать пользователя', 'Настройки'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-  sx={{
-    minHeight: 48,
-    justifyContent: open ? 'initial' : 'center',
-    px: 2.5,
-  }}
-  onClick={text === 'Выход' ? handleLogout : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings  : undefined }
->
-
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <AccountBoxOutlinedIcon /> : <SettingsIcon/>}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+  {["Главная", 'Рассылка', 'Создать пользователя', 'Подразделения', 'Настройки'].map((text, index) => (
+    <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+      <ListItemButton
+        sx={{
+          minHeight: 48,
+          justifyContent: open ? 'initial' : 'center',
+          px: 2.5,
+        }}
+        onClick={text === 'Главная' ? handleHome : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings : text === 'Рассылка' ? handleChanges  : text === 'Подразделения' ? handleDivision : undefined }
+        >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {icons[index]}
+        </ListItemIcon>
+        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
         <Divider />
         
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        
   <DrawerHeader />
   <form onSubmit={handleSubmit}>
         <TextField
@@ -260,6 +264,6 @@ const handleSettings = () => {
 </Box>
 
       </Box>
-    </Box>
+   
   );
 }

@@ -25,6 +25,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Navigate, useNavigate } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings'; 
+import SendIcon from '@mui/icons-material/Send';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const drawerWidth = 240;
@@ -108,6 +112,13 @@ export default function CreateUser() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const token = localStorage.getItem('token');
   const navigate = useNavigate()
+  const icons = [
+    <HomeIcon />,
+    <SendIcon />,
+    <PersonAddAltIcon />,
+    <ApartmentIcon />,
+    <SettingsIcon />,
+  ];
   const handleCreateUser = () => {
     axios
       .post('http://192.168.1.92:12222/api/user/new', newUser, {
@@ -134,23 +145,8 @@ export default function CreateUser() {
 
   useEffect(() => {
     if (!token) {
-      // Если токена нет, перенаправить пользователя на страницу авторизации
       window.location.href = '/';
-    } else {
-      axios
-        .get('http://192.168.1.92:12222/api/user/get', {
-          params: {
-            token: token,
-          },
-        })
-        .then((response) => {
-          setResponseData(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [token]);
+    } }, [token]);
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -172,6 +168,16 @@ export default function CreateUser() {
   const handleSettings = () => {
     navigate('/settings');
   };
+  const handleChanges = () => {
+    navigate('/changes');
+  };
+  const handleDivision = () => {
+      navigate('/division');
+    };
+    const handleHome = () => {
+        navigate('/admin');
+      };
+
 
 
   return (
@@ -204,40 +210,43 @@ export default function CreateUser() {
         </DrawerHeader>
         <Divider />
         <List>
-          {[responseData?.login, 'Рассылка', 'Создать пользователя', 'Настройки'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                     <ListItemButton
-  sx={{
-    minHeight: 48,
-    justifyContent: open ? 'initial' : 'center',
-    px: 2.5,
-  }}
-  onClick={text === 'Выход' ? handleLogout : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings  : undefined }
->
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <AccountBoxOutlinedIcon /> : <SettingsIcon/>}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+  {["Главная", 'Рассылка', 'Создать пользователя', 'Подразделения', 'Настройки'].map((text, index) => (
+    <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+      <ListItemButton
+        sx={{
+          minHeight: 48,
+          justifyContent: open ? 'initial' : 'center',
+          px: 2.5,
+        }}
+        onClick={text === 'Главная' ? handleHome : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings : text === 'Рассылка' ? handleChanges  : text === 'Подразделения' ? handleDivision : undefined }
+        >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {icons[index]}
+        </ListItemIcon>
+        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
         <Divider />
         
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <form className='form'>
+        <form >
           <div>
             <TextField
-              label="Login"
+              label="Логин"
               name="login"
+              fullWidth
+          sx={{ marginBottom: 2 }}
+
               value={newUser.login}
               onChange={handleInputChange}
               
@@ -245,9 +254,12 @@ export default function CreateUser() {
           </div>
           <div>
             <TextField
-              label="Password"
+              label="Пароль"
               name="password"
               value={newUser.password}
+              fullWidth
+          sx={{ marginBottom: 2 }}
+
               onChange={handleInputChange}
               type="password"
             />

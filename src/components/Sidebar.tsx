@@ -24,6 +24,10 @@ import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
 import { useNavigate } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings'; 
 import TextField from '@mui/material/TextField';
+import SendIcon from '@mui/icons-material/Send';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const drawerWidth = 240;
@@ -31,6 +35,15 @@ const drawerWidth = 240;
 type Data = {
   login: string;
 };
+type DocData = {
+    doc_id: number;
+    type: number;
+    fio: string;
+    from_id: string;
+    platform: string;
+    description: string;
+    is_ready: number;
+  };
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -102,41 +115,56 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Sidebar() {
   const [responseData, setResponseData] = useState<Data | null>(null);
+  const [data, setData] = useState<DocData[]>([]);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
-const handleCreateUser = () => {
-  navigate('/create');
-};
 
-const handleSettings = () => {
-    navigate('/settings');
-  };
+
+
+  const [docTypes, setDocTypes] = useState<number[]>([]);
+
+  const icons = [
+    <HomeIcon />,
+    <SendIcon />,
+    <PersonAddAltIcon />,
+    <ApartmentIcon />,
+    <SettingsIcon />,
+  ];
   
-  const handleChanges = () => {
-    navigate('/changes');
-  };
-
-
   useEffect(() => {
     if (!token) {
-      // Если токена нет, перенаправить пользователя на страницу авторизации
-      window.location.href = '/';
+        // Если токена нет, перенаправить пользователя на страницу авторизации
+        window.location.href = '/';
     } else {
-      axios
-        .get('http://192.168.1.92:12222/api/user/get', {
-          params: {
-            token: token,
-          },
+        // Получение данных о документах
+        axios.get('http://192.168.1.92:12222/api/doc/', {
+            params: {
+                token: token,
+            },
         })
         .then((response) => {
-          setResponseData(response.data);
+            setData(response.data);
         })
         .catch((error) => {
-          console.log(error);
+            console.error(error);
+        });
+
+        // Получение данных о типах документов
+        axios.get('http://192.168.1.92:12222/api/doc/type', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+        .then((response) => {
+            setDocTypes(response.data);
+        })
+        .catch((error) => {
+            console.error(error);
         });
     }
-  }, [token]);
+}, [token]);
+
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -155,6 +183,23 @@ const handleSettings = () => {
     // Перенаправить пользователя на страницу авторизации
     window.location.href = '/'; // Меняем URL для перенаправления
   };
+  const handleCreateUser = () => {
+    navigate('/create');
+  };
+  
+  const handleSettings = () => {
+      navigate('/settings');
+    };
+    
+    const handleChanges = () => {
+      navigate('/changes');
+    };
+    const handleDivision = () => {
+        navigate('/division');
+      };
+    const handleHome = () => {
+        navigate('/admin');
+      };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -186,63 +231,47 @@ const handleSettings = () => {
         </DrawerHeader>
         <Divider />
         <List>
-          {[responseData?.login, 'Рассылка', 'Создать пользователя', 'Настройки'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-            <ListItemButton
-  sx={{
-    minHeight: 48,
-    justifyContent: open ? 'initial' : 'center',
-    px: 2.5,
-  }}
-  onClick={text === 'Выход' ? handleLogout : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings : text === 'Рассылка' ? handleChanges  : undefined }
->
+  {["Главная", 'Рассылка', 'Создать пользователя', 'Подразделения', 'Настройки'].map((text, index) => (
+    <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+      <ListItemButton
+        sx={{
+          minHeight: 48,
+          justifyContent: open ? 'initial' : 'center',
+          px: 2.5,
+        }}
+        onClick={text === 'Главная' ? handleHome : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings : text === 'Рассылка' ? handleChanges  : text === 'Подразделения' ? handleDivision : undefined }
+        >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {icons[index]}
+        </ListItemIcon>
+        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
 
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <AccountBoxOutlinedIcon /> : <SettingsIcon/>}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
         <Divider />
         
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <Typography paragraph>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua. Rhoncus dolor purus non
-          enim praesent elementum facilisis leo vel. Risus at ultrices mi tempus
-          imperdiet. Semper risus in hendrerit gravida rutrum quisque non tellus.
-          Convallis convallis tellus id interdum velit laoreet id donec ultrices.
-          Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-          adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra
-          nibh cras. Metus vulputate eu scelerisque felis imperdiet proin fermentum
-          leo. Mauris commodo quis imperdiet massa tincidunt. Cras tincidunt lobortis
-          feugiat vivamus at augue. At augue eget arcu dictum varius duis at
-          consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
-          sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper
-          eget nulla facilisi etiam dignissim diam. Pulvinar elementum integer enim
-          neque volutpat ac tincidunt. Ornare suspendisse sed nisi lacus sed viverra
-          tellus. Purus sit amet volutpat consequat mauris. Elementum eu facilisis
-          sed odio morbi. Euismod lacinia at quis risus sed vulputate odio. Morbi
-          tincidunt ornare massa eget egestas purus viverra accumsan in. In hendrerit
-          gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem
-          et tortor. Habitant morbi tristique senectus et. Adipiscing elit duis
-          tristique sollicitudin nibh sit. Ornare aenean euismod elementum nisi quis
-          eleifend. Commodo viverra maecenas accumsan lacus vel facilisis. Nulla
-          posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
+        {data.map((doc) => (
+          <li key={doc.doc_id}>
+            <strong>Тип документа:</strong> {docTypes[doc.type] ? JSON.parse(JSON.stringify(docTypes[doc.type])).name : ''}<br/>
+            <strong>ФИО:</strong> {doc.fio}<br />
+            <strong>Описание:</strong> {doc.description}<br />
+
+            <br />
+          </li>
+        ))}
+
+
       </Box>
     </Box>
   );

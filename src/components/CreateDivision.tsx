@@ -25,6 +25,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { Navigate, useNavigate } from 'react-router-dom';
 import SettingsIcon from '@mui/icons-material/Settings'; 
+import SendIcon from '@mui/icons-material/Send';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import ApartmentIcon from '@mui/icons-material/Apartment';
+import HomeIcon from '@mui/icons-material/Home';
 
 
 const drawerWidth = 240;
@@ -108,7 +112,14 @@ export default function CreateDivision() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const token = localStorage.getItem('token');
   const navigate = useNavigate()
-  const handleCreateUser = () => {
+  const icons = [
+    <HomeIcon />,
+    <SendIcon />,
+    <PersonAddAltIcon />,
+    <ApartmentIcon />,
+    <SettingsIcon />,
+  ];
+  const handleClick = () => {
     axios
       .post('http://192.168.1.92:12222/api/division/', newDivision, {
         params: {
@@ -121,7 +132,7 @@ export default function CreateDivision() {
         console.log('User created:', response.data);
       })
       .catch((error) => {
-        setErrorMessage('Такой пользователь уже существует.');
+        setErrorMessage('Ошибка.');
         setSuccessMessage(''); // Clear any previous success messages
         console.error('Error creating user:', error);
       });
@@ -134,23 +145,8 @@ export default function CreateDivision() {
 
   useEffect(() => {
     if (!token) {
-      // Если токена нет, перенаправить пользователя на страницу авторизации
       window.location.href = '/';
-    } else {
-      axios
-        .get('http://192.168.1.92:12222/api/user/get', {
-          params: {
-            token: token,
-          },
-        })
-        .then((response) => {
-          setResponseData(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [token]);
+    } }, [token]);
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -172,6 +168,21 @@ export default function CreateDivision() {
   const handleSettings = () => {
     navigate('/settings');
   };
+  const handleCreateUser = () => {
+    navigate('/create');
+  };
+  
+  const handleHome = () => {
+    navigate('/admin');
+  };
+
+    
+    const handleChanges = () => {
+      navigate('/changes');
+    };
+    const handleDivision = () => {
+        navigate('/division');
+      };
 
 
   return (
@@ -204,79 +215,89 @@ export default function CreateDivision() {
         </DrawerHeader>
         <Divider />
         <List>
-          {[responseData?.login, 'Рассылка', 'Создать пользователя','Подразделения', 'Настройки'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                     <ListItemButton
-  sx={{
-    minHeight: 48,
-    justifyContent: open ? 'initial' : 'center',
-    px: 2.5,
-  }}
-  onClick={text === 'Выход' ? handleLogout : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings  : undefined }
->
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {index % 2 === 0 ? <AccountBoxOutlinedIcon /> : <SettingsIcon/>}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+  {["Главная", 'Рассылка', 'Создать пользователя', 'Подразделения', 'Настройки'].map((text, index) => (
+    <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+      <ListItemButton
+        sx={{
+          minHeight: 48,
+          justifyContent: open ? 'initial' : 'center',
+          px: 2.5,
+        }}
+        onClick={text === 'Главная' ? handleHome : text === 'Создать пользователя' ? handleCreateUser  : text === 'Настройки' ? handleSettings : text === 'Рассылка' ? handleChanges  : text === 'Подразделения' ? handleDivision : undefined }
+        >
+        <ListItemIcon
+          sx={{
+            minWidth: 0,
+            mr: open ? 3 : 'auto',
+            justifyContent: 'center',
+          }}
+        >
+          {icons[index]}
+        </ListItemIcon>
+        <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
         <Divider />
         
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <form className='form'>
+        <form >
           <div>
             <TextField
-              label="name"
+              label="Название"
               name="name"
               value={newDivision.name}
               onChange={handleInputChange}
+              fullWidth
+          sx={{ marginBottom: 2 }}
               
             />
           </div>
           <div>
             <TextField
-              label="hour_work"
+              label="Часы работы"
               name="hour_work"
               value={newDivision.hour_work}
               onChange={handleInputChange}
+              fullWidth
+          sx={{ marginBottom: 2 }}
             />
           </div>
           <div>
             <TextField
-              label="auditoria"
+              label="Аудитория"
               name="auditoria"
               value={newDivision.auditoria}
               onChange={handleInputChange}
+              fullWidth
+          sx={{ marginBottom: 2 }}
             />
           </div>
           <div>
             <TextField
-              label="floor"
+              label="Этаж"
               name="floor"
               value={newDivision.floor}
               onChange={handleInputChange}
+              fullWidth
+          sx={{ marginBottom: 2 }}
             />
           </div>
           <div>
             <TextField
-              label="description"
+              label="Описание"
               name="description"
               value={newDivision.description}
               onChange={handleInputChange}
+              fullWidth
+          sx={{ marginBottom: 2 }}
             />
           </div>
           <div>
-            <Button variant="contained" color="primary" onClick={handleCreateUser}>
+            <Button variant="contained" color="primary" onClick={handleClick}>
 Создать            </Button>
           </div>
           {successMessage && (
