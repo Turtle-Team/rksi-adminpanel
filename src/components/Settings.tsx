@@ -215,21 +215,9 @@ useEffect(() => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
-        <h3>Промпт</h3>
+    
 
-        <TextField
-          id="standard-textarea"
-          label=""
-          placeholder=""
-          multiline
-          fullWidth
-          maxRows={4}
-          variant="standard"
-        /><br/><br />
- <Button  variant="contained" color="primary">
-Сохранить        </Button>
-
-            <h3>Выйти</h3>
+            <h3>Выход</h3>
             <Button onClick={handleLogout} variant="contained" color="primary">
 Выйти        </Button>
       </Box>

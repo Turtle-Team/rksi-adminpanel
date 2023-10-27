@@ -252,7 +252,7 @@ export default function CreateDivision() {
               value={newDivision.name}
               onChange={handleInputChange}
               fullWidth
-          sx={{ marginBottom: 2 }}
+              sx={{ marginBottom: 2 ,m: 1, width: '50%' }}
               
             />
           </div>
@@ -263,8 +263,7 @@ export default function CreateDivision() {
               value={newDivision.hour_work}
               onChange={handleInputChange}
               fullWidth
-          sx={{ marginBottom: 2 }}
-            />
+              sx={{ marginBottom: 2 ,m: 1, width: '50%' }}            />
           </div>
           <div>
             <TextField
@@ -273,8 +272,7 @@ export default function CreateDivision() {
               value={newDivision.auditoria}
               onChange={handleInputChange}
               fullWidth
-          sx={{ marginBottom: 2 }}
-            />
+              sx={{ marginBottom: 2 ,m: 1, width: '50%' }}            />
           </div>
           <div>
             <TextField
@@ -283,8 +281,7 @@ export default function CreateDivision() {
               value={newDivision.floor}
               onChange={handleInputChange}
               fullWidth
-          sx={{ marginBottom: 2 }}
-            />
+              sx={{ marginBottom: 2 ,m: 1, width: '50%' }}            />
           </div>
           <div>
             <TextField
@@ -293,11 +290,10 @@ export default function CreateDivision() {
               value={newDivision.description}
               onChange={handleInputChange}
               fullWidth
-          sx={{ marginBottom: 2 }}
-            />
+              sx={{ marginBottom: 2 ,m: 1, width: '50%' }}            />
           </div>
-          <div>
-            <Button variant="contained" color="primary" onClick={handleClick}>
+          <div><br />
+            <Button variant="contained" sx={{ marginBottom: 2 ,m: 1}} color="primary" onClick={handleClick}>
 Создать            </Button>
           </div>
           {successMessage && (

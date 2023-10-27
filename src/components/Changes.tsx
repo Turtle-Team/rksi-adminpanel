@@ -243,21 +243,21 @@ const handleSettings = () => {
   <form onSubmit={handleSubmit}>
         <TextField
           label="Группа"
-          fullWidth
+
           variant="outlined"
           value={group}
           onChange={(e) => setGroup(e.target.value)}
-          sx={{ marginBottom: 2 }}
+          sx={{ marginBottom: 2 ,m: 1, width: '50%' }}
         />
         <TextField
           label="Текст"
-          fullWidth
+          
           variant="outlined"
           value={text}
           onChange={(e) => setText(e.target.value)}
-          sx={{ marginBottom: 2 }}
-        />
-        <Button type="submit" variant="contained" color="primary">
+          sx={{ marginBottom: 2 ,m: 1, width: '50%' }}
+        /><br/>
+        <Button type="submit" sx={{ marginBottom: 2 ,m: 1}}variant="contained" color="primary">
           Отправить
         </Button>
       </form>

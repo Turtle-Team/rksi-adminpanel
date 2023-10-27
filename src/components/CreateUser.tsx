@@ -119,7 +119,7 @@ export default function CreateUser() {
     <ApartmentIcon />,
     <SettingsIcon />,
   ];
-  const handleCreateUser = () => {
+  const handleCreateUsers = () => {
     axios
       .post('http://192.168.1.92:12222/api/user/new', newUser, {
         params: {
@@ -177,7 +177,9 @@ export default function CreateUser() {
     const handleHome = () => {
         navigate('/admin');
       };
-
+      const handleCreateUser = () => {
+        navigate('/create');
+      };
 
 
   return (
@@ -245,7 +247,7 @@ export default function CreateUser() {
               label="Логин"
               name="login"
               fullWidth
-          sx={{ marginBottom: 2 }}
+          sx={{ marginBottom: 2,m: 1, width: '50%' }}
 
               value={newUser.login}
               onChange={handleInputChange}
@@ -258,14 +260,14 @@ export default function CreateUser() {
               name="password"
               value={newUser.password}
               fullWidth
-          sx={{ marginBottom: 2 }}
+          sx={{ marginBottom: 2 ,m: 1, width: '50%'}}
 
               onChange={handleInputChange}
               type="password"
             />
           </div>
-          <div>
-            <Button variant="contained" color="primary" onClick={handleCreateUser}>
+          <div><br />
+            <Button variant="contained" sx={{ marginBottom: 2 ,m: 1}} color="primary" onClick={handleCreateUsers}>
 Создать            </Button>
           </div>
           {successMessage && (

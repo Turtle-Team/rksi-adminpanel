@@ -28,6 +28,7 @@ import SendIcon from '@mui/icons-material/Send';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import HomeIcon from '@mui/icons-material/Home';
+import Button from '@mui/material/Button';
 
 
 const drawerWidth = 240;
@@ -118,12 +119,9 @@ export default function Sidebar() {
   const [data, setData] = useState<DocData[]>([]);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
-
-
-
-
   const [docTypes, setDocTypes] = useState<number[]>([]);
-
+  const [textData,setTextData] = useState('')
+  
   const icons = [
     <HomeIcon />,
     <SendIcon />,
@@ -200,6 +198,53 @@ export default function Sidebar() {
     const handleHome = () => {
         navigate('/admin');
       };
+      const sendPostRequest = (fromId: string, platform: string, textData: string) => {
+        setTextData('');
+      
+        // Create the request payload
+        const requestData = {
+          id: fromId,
+          platform: platform,
+          text: textData,
+        };
+      
+        // Send the POST request
+        axios
+          .post('http://192.168.1.92:9999/api/v2/changes/current', requestData)
+          .then((response) => {
+            // Successful response handling
+            console.log('Successfully sent', response);
+          })
+          .catch((error) => {
+            // Error handling
+            console.error('Error sending POST request', error);
+          });
+      };
+      
+      
+      
+      const sendPutRequest = (docId:number) => {
+        if (!token) {
+          console.error("Token is missing.");
+          return;
+        }
+      
+        axios
+          .put(`http://192.168.1.92:12222/api/doc/?token=${token}&doc_id=${docId}`, {
+            params: {
+                docId:docId,
+                token: token,
+              },
+          })
+          .then((response) => {
+            console.log("PUT запрос успешно отправлен", response);
+          })
+          .catch((error) => {
+            console.error("Ошибка при отправке PUT запроса", error);
+          });
+      };
+      
+      
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -260,19 +305,38 @@ export default function Sidebar() {
         
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        {data.map((doc) => (
-          <li key={doc.doc_id}>
-            <strong>Тип документа:</strong> {docTypes[doc.type] ? JSON.parse(JSON.stringify(docTypes[doc.type])).name : ''}<br/>
-            <strong>ФИО:</strong> {doc.fio}<br />
-            <strong>Описание:</strong> {doc.description}<br />
+  <DrawerHeader />
+  {data.map((doc) => (
+    <div key={doc.doc_id}>
+      <strong>Тип документа:</strong> {docTypes[doc.type] ? JSON.parse(JSON.stringify(docTypes[doc.type])).name : ''}<br/>
+      <strong>ФИО:</strong> {doc.fio}<br />
+      <strong>Описание:</strong> {doc.description}<br />
 
-            <br />
-          </li>
-        ))}
+      {/* Добавляем форму под каждым элементом документа */}
+      <form onSubmit={(e) => {
+      e.preventDefault();
+      sendPutRequest(doc.doc_id); // Вызываем PUT-запрос
 
+      // Вызываем POST-запрос
+      sendPostRequest(doc.from_id, doc.platform, textData);}} >
+        <TextField
+          label="Введите текст"
+          variant="outlined"
+          onChange={(e) => setTextData(e.target.value)} 
+          sx={{ marginBottom: 1,
+            marginTop: 1,m: 1, width: '50%'
+        }}
+                  /><br/>
+        <Button type="submit"  variant="contained" color="primary">
+          Отправить
+        </Button>
+       
+      </form>
 
-      </Box>
+      <br />
+    </div>
+  ))}
+</Box>
     </Box>
   );
 }
